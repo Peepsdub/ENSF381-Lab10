@@ -14,7 +14,7 @@ def load_products():
 def get_products(product_id=None):
     products = load_products()
     if product_id is None:
-        #Return all products wrapped in an object with a 'prodcuts' key
+        #Return all products wrapped in an object with a 'products' key
         return jsonify({"products":products})
     else:
         product = next((p for p in products if p['id'] == product_id), None)
@@ -33,6 +33,32 @@ def add_product():
     with open('products.json', 'w') as f:
         json.dump({"products": products}, f)
     return jsonify(new_product), 201
+
+@app.route('/products/update/<int:product_id>', methods=['PUT'])
+def update_product(product_id):
+    products = load_products()
+    for product in products:
+        if product['id'] == product_id:
+            updated_product = request.json
+            product.update(updated_product)
+            with open('products.json', 'w') as f:
+                json.dump({"products": products}, f)
+            return jsonify(product), 200
+    return jsonify({"error": "Product not found"}), 404
+
+@app.route('/products/remove/<int:product_id>', methods=['DELETE'])
+def remove_product(product_id):
+    products = load_products()
+    for index, product in enumerate(products):
+        if product['id'] == product_id:
+            del products[index]
+            with open('products.json', 'w') as f:
+                json.dump({"products": products}, f)
+            return jsonify({"message": "Product removed successfully"}), 200
+    return jsonify({"error": "Product not found"}), 404
+
+
+
 
 @app.route('/product-images/<path:filename>')
 def get_image(filename):
