@@ -1,8 +1,18 @@
+# // <!-- 
+# // ======================================================================
+# // Assignment: ENSF 381 -server.py
+# // Created By Muhammad Ahmed UCID: 10190776, Petr Dubovsky UCID: 30171229
+# // Submission: Mon Wed 27, 2024
+# // ======================================================================
+# // -->
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS 
 import json
 import os
 
 app = Flask(__name__)
+CORS(app)
+
 
 def load_products():
     with open('products.json', 'r') as f:
@@ -34,7 +44,7 @@ def add_product():
         json.dump({"products": products}, f)
     return jsonify(new_product), 201
 
-@app.route('/products/update/<int:product_id>', methods=['PUT'])
+@app.route('/products/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
     products = load_products()
     for product in products:
@@ -46,7 +56,7 @@ def update_product(product_id):
             return jsonify(product), 200
     return jsonify({"error": "Product not found"}), 404
 
-@app.route('/products/remove/<int:product_id>', methods=['DELETE'])
+@app.route('/products/<int:product_id>', methods=['DELETE'])
 def remove_product(product_id):
     products = load_products()
     for index, product in enumerate(products):
